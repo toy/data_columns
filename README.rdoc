@@ -1,0 +1,18 @@
+DataColumns
+===========
+
+Store multiple columns in serialized data column
+
+Example
+=======
+
+class Person < ActiveRecord::Base
+  data_columns :icq, :skype
+  data_columns :phone
+
+  validates_presence_of :phone
+end
+
+Person.create(:icq => '123456789', :skype => 'hello') # gives us error message as phone must be present :)
+
+Copyright (c) 2009 Ivan, released under the MIT license
