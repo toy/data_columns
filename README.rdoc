@@ -1,10 +1,28 @@
 = DataColumns
 Store multiple columns in serialized data column
 
+== Usage
+Create in your model text column data
+
+  create_table <table_name> do |t|
+    t.text :data
+  end
+
+or
+
+  change_table <table_name> do |t|
+    t.text :data
+  end
+
 == Example
   class Person < ActiveRecord::Base
     data_columns :icq, :skype
     data_columns :phone
+
+    # type triggers standard conversions
+    # no type - no conversions
+    data_columns :some_time_ago, :type => :time, :default => 1.year.ago
+    data_columns :x, :y, :z, :type => 'integer'
 
     validates_presence_of :phone
   end
