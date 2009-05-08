@@ -10,6 +10,7 @@ end
 
 class Worker < Person
   data_columns :work_phone
+  data_columns :x, :y, :default => 0
 end
 
 describe DataColumns do
@@ -43,6 +44,13 @@ describe DataColumns do
     p = Person.first
     p.a.should == 123
     p.b.should == 123
+  end
+
+  it "should add options for inherited columns" do
+    Worker.create(:x => '10px')
+    w = Worker.first
+    w.x.should == 10
+    w.y.should == 0
   end
 
   it "should return all data_column_names for Person" do

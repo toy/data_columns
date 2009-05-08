@@ -52,6 +52,12 @@ module DataColumns
 
       columns.each do |column|
         column = column.to_s
+
+        if superclass.data_column_converters[column]
+          default ||= superclass.data_column_converters[column].default
+          type ||= superclass.data_column_converters[column].type.to_s
+        end
+
         data_column_converters[column] = ActiveRecord::ConnectionAdapters::Column.new(column, default, type)
         class_eval %Q{
           def #{column}
