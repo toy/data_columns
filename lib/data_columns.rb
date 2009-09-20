@@ -6,7 +6,7 @@ module DataColumns
   def read_data_column(name)
     name = name.to_s
     converter = self.class.data_column_converters[name]
-    (self[:data] || {})[name] || converter.default
+    (self[data_column_field] || {})[name] || converter.default
   end
 
   def write_data_column(name, value)
@@ -23,14 +23,14 @@ module DataColumns
 
     self[name] = value
 
-    (self[:data] ||= {})[name] = converter.type_cast(value)
+    (self[data_column_field] ||= {})[name] = converter.type_cast(value)
   end
 
   module ClassMethods
     def data_column_converters
       read_inheritable_attribute(:data_column_converters) || write_inheritable_attribute(:data_column_converters, {})
     end
-
+    
     def data_column_names
       data_column_converters.keys
     end
@@ -39,10 +39,13 @@ module DataColumns
       options = columns.extract_options!
       type = options[:type] && options[:type].to_s
       default = options[:default]
+      
+      class_inheritable_accessor :data_column_field
+      self.data_column_field = (options[:field] || data_column_field || "data").to_s
 
       if data_column_converters.empty?
-        serialize :data, Hash
-        attr_protected :data
+        serialize data_column_field, Hash
+        attr_protected data_column_field
         class_eval %Q{
           def self.column_names
             super + data_column_names

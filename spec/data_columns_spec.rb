@@ -13,6 +13,14 @@ class Worker < Person
   data_columns :x, :y, :default => 0
 end
 
+class Xman < ActiveRecord::Base
+  data_columns :name, :field => :cached_data
+end
+
+class SubXman < Xman
+  data_columns :ability
+end
+
 describe DataColumns do
   it "should store contacts for Person" do
     Person.create(:icq => '12345', :skype => 'vasa', :phone => '56789')
@@ -47,7 +55,7 @@ describe DataColumns do
   end
 
   it "should add options for inherited columns" do
-    Worker.create(:x => '10px')
+    Worker.create!(:x => '10px')
     w = Worker.first
     w.x.should == 10
     w.y.should == 0
@@ -81,5 +89,31 @@ describe DataColumns do
     person.icq = 'lala'
     person.changed.should == ['icq']
     person.icq_change.should == ['12345', 'lala']
+  end
+  
+  context "having set storing_column_name" do
+    
+    it "should store a data_column_field" do
+      Xman.data_column_field.should == "cached_data"
+      Xman.serialized_attributes.keys.should include("cached_data")
+    end
+    
+    it "should inherit a data_column_field" do
+      SubXman.data_column_field.should == "cached_data"
+    end
+    
+    it "should store a name" do
+      Xman.create(:name => "Iron Man")
+      xman = Xman.first
+      xman.name.should == "Iron Man"
+      xman.cached_data.should == {"name" => "Iron Man"}
+    end
+    
+    it "should store an ability" do
+      SubXman.create(:ability => "to fly")
+      xman = SubXman.first
+      xman.ability.should == "to fly"
+    end
+    
   end
 end

@@ -14,7 +14,7 @@ or
     t.text :data
   end
 
-== Example
+== Examples
   class Person < ActiveRecord::Base
     data_columns :icq, :skype
     data_columns :phone
@@ -23,10 +23,15 @@ or
     # no type - no conversions
     data_columns :some_time_ago, :type => :time, :default => 1.year.ago
     data_columns :x, :y, :z, :type => 'integer'
-
+    
     validates_presence_of :phone
   end
 
   Person.create(:icq => '123456789', :skype => 'hello') # gives us error message as phone must be present :)
-
+  
+  class Xman < ActiveRecord::Base
+    # stores columns in a field called :cached_data instead of default :data
+    data_columns :name, :field => :cached_data
+  end
+  
 Copyright (c) 2009 Ivan, released under the MIT license
